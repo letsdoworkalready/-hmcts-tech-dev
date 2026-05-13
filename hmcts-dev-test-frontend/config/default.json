@@ -1,0 +1,6 @@
+{
+  "apiBaseUrl": "http://localhost:4000",
+  "session": {
+    "secret": "hmcts-task-manager-secret-change-in-production"
+  }
+}

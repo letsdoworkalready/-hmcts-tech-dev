@@ -1,0 +1,271 @@
+// override for the default 960px govuk-page-width.
+$govuk-page-width: 1536px;
+
+@import 'govuk-frontend';
+
+/* Signed-in row: Sign out stays on the same line as the name when there is room */
+.app-signed-in-line {
+  .app-inline-sign-out-form {
+    margin-left: govuk-spacing(1);
+  }
+}
+
+/* POST sign out: same GOV.UK body font and link colours as surrounding text */
+.app-inline-sign-out-form {
+  display: inline;
+  margin: 0;
+  vertical-align: baseline;
+}
+
+button.govuk-link.app-sign-out-button {
+  @include govuk-font(19);
+  display: inline;
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  text-decoration: underline;
+  color: $govuk-link-colour;
+
+  &:hover {
+    color: $govuk-link-hover-colour;
+  }
+}
+
+/* Required field marker (red asterisk) on task form labels */
+.app-required-indicator {
+  color: $govuk-error-colour;
+  font-weight: bold;
+  margin-left: 0.125em;
+}
+
+/* Delete task confirmation dialog (task list) */
+.delete-task-dialog {
+  border: 0;
+  padding: 0;
+  margin: auto;
+  max-width: 28rem;
+}
+
+.delete-task-dialog::backdrop {
+  background: rgba(11, 12, 12, 0.65);
+}
+
+.delete-task-dialog__panel {
+  padding: govuk-spacing(4);
+  border: 5px solid $govuk-text-colour;
+  background: govuk-colour('white');
+}
+
+/* Task list: paired action buttons sit comfortably in the table cell */
+.app-table-actions {
+  flex-wrap: wrap;
+}
+
+/* ── View toolbar (toggle + create button, right-aligned) ── */
+.app-view-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: govuk-spacing(3);
+  padding-top: govuk-spacing(2);
+  flex-wrap: wrap;
+}
+
+/* List view: sidebar filters + main table */
+.app-list-layout {
+  align-items: flex-start;
+}
+
+.app-list-sidebar {
+  margin-bottom: govuk-spacing(4);
+
+  @include govuk-media-query($from: desktop) {
+    position: sticky;
+    top: govuk-spacing(2);
+    margin-bottom: 0;
+  }
+}
+
+.app-list-sidebar__panel {
+  padding: govuk-spacing(4);
+  border: 1px solid $govuk-border-colour;
+  background: govuk-colour('white');
+  box-shadow: 0 2px 6px rgba(11, 12, 12, 0.08);
+}
+
+.app-list-sidebar__title {
+  margin-bottom: govuk-spacing(3);
+  padding-bottom: govuk-spacing(2);
+  border-bottom: 1px solid $govuk-border-colour;
+}
+
+.app-list-filters {
+  margin: 0;
+}
+
+.app-list-main {
+  min-width: 0;
+}
+
+.app-list-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: govuk-spacing(1);
+  border: 2px solid $govuk-border-colour;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.app-view-toggle__btn {
+  @include govuk-font(16);
+  display: inline-block;
+  padding: govuk-spacing(1) govuk-spacing(2);
+  text-decoration: none;
+  color: $govuk-link-colour;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: govuk-colour('light-grey');
+    color: $govuk-link-hover-colour;
+  }
+}
+
+.app-view-toggle__btn--active {
+  background-color: $govuk-text-colour;
+  color: govuk-colour('white');
+  font-weight: bold;
+  cursor: default;
+
+  &:hover {
+    background-color: $govuk-text-colour;
+    color: govuk-colour('white');
+  }
+}
+
+/* ── Kanban board ── */
+.app-kanban-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: govuk-spacing(4);
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Column */
+.app-kanban-column {
+  background-color: govuk-colour('light-grey');
+  border-top: 4px solid $govuk-border-colour;
+  border-radius: 4px;
+  padding: govuk-spacing(3);
+  min-height: 200px;
+}
+
+.app-kanban-column--todo        { border-top-color: govuk-colour('mid-grey'); }
+.app-kanban-column--in-progress { border-top-color: #1d70b8; }
+.app-kanban-column--done        { border-top-color: #00703c; }
+
+.app-kanban-column__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: govuk-spacing(3);
+  padding-bottom: govuk-spacing(2);
+  border-bottom: 1px solid darken(govuk-colour('light-grey'), 10%);
+}
+
+.app-kanban-column__title {
+  margin-bottom: 0;
+}
+
+.app-kanban-column__count {
+  background: govuk-colour('white');
+  border: 1px solid $govuk-border-colour;
+  border-radius: 12px;
+  padding: 0 govuk-spacing(2);
+  font-weight: bold;
+  min-width: 24px;
+  text-align: center;
+}
+
+.app-kanban-column__empty {
+  color: $govuk-secondary-text-colour;
+  font-style: italic;
+  text-align: center;
+  margin-top: govuk-spacing(4);
+}
+
+/* Card */
+.app-kanban-card {
+  background-color: govuk-colour('white');
+  border: 1px solid $govuk-border-colour;
+  border-radius: 4px;
+  padding: govuk-spacing(3);
+  margin-bottom: govuk-spacing(3);
+  box-shadow: 0 1px 3px rgba(11, 12, 12, 0.1);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.app-kanban-card__title {
+  margin-bottom: govuk-spacing(1);
+}
+
+.app-kanban-card__description {
+  color: $govuk-secondary-text-colour;
+  margin-bottom: govuk-spacing(2);
+}
+
+.app-kanban-card__meta {
+  margin-bottom: govuk-spacing(1);
+  color: $govuk-secondary-text-colour;
+}
+
+.app-kanban-card__meta-label {
+  font-weight: bold;
+  color: $govuk-text-colour;
+}
+
+.app-kanban-card__actions {
+  margin-top: govuk-spacing(3);
+  flex-wrap: wrap;
+}
+
+/*
+ * Red destructive confirm: ONLY inside #delete-task-dialog.
+ * Table row Delete stays govuk-button--secondary (grey); do not reuse this class there.
+ */
+.delete-task-dialog .govuk-button.app-button--modal-delete-confirm {
+  $destructive: $govuk-error-colour;
+  $destructive-shadow: #942514;
+
+  &,
+  &:link,
+  &:visited {
+    color: govuk-colour('white');
+    background-color: $destructive;
+    box-shadow: 0 2px 0 $destructive-shadow;
+  }
+
+  &:hover {
+    background-color: mix(#000000, $destructive, 10%);
+  }
+
+  &:active {
+    background-color: mix(#000000, $destructive, 20%);
+    box-shadow: none;
+  }
+}

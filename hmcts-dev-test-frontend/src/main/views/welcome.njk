@@ -1,0 +1,56 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "template.njk" %}
+
+{% block pageTitle %}Welcome - HMCTS Task Manager{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if errors.length %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errors
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">Welcome to HMCTS Task Manager</h1>
+
+      <p class="govuk-body">
+        This service helps caseworkers manage and track their tasks.
+      </p>
+
+      <p class="govuk-body">
+        Enter your name to get started. Your name will be recorded against any tasks you create or update.
+      </p>
+
+      <form method="post" action="/welcome" novalidate>
+
+        {{ govukInput({
+          label: {
+            text: "Your name",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Enter your first and last name"
+          },
+          id: "actorName",
+          name: "actorName",
+          value: value,
+          errorMessage: errors[0] if errors.length,
+          autocomplete: "name",
+          classes: "govuk-input--width-20"
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

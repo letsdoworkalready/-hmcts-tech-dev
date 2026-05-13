@@ -1,0 +1,137 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "template.njk" %}
+
+{% block pageTitle %}{{ "Edit task" if mode == "edit" else "Create task" }} - HMCTS Task Manager{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({ text: "Back to tasks", href: "/tasks" }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if errors.length %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errors
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ "Edit task" if mode == "edit" else "Create a new task" }}</h1>
+
+      <p class="govuk-body app-signed-in-line">Signed in as <strong>{{ actorName }}</strong>. <form method="post" action="/sign-out" class="app-inline-sign-out-form"><button type="submit" class="govuk-link app-sign-out-button">Sign out</button></form></p>
+
+      {% set formAction = "/tasks/" + task.id + "/edit" if mode == "edit" else "/tasks" %}
+
+      <form method="post" action="{{ formAction }}" novalidate>
+
+        {{ govukInput({
+          label: {
+            html: 'Title <span class="app-required-indicator" aria-hidden="true">*</span>',
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "A short title, up to 255 characters."
+          },
+          id: "title",
+          name: "title",
+          value: task.title,
+          errorMessage: { text: fieldErrors.title } if fieldErrors.title,
+          classes: "govuk-input--width-30",
+          attributes: {
+            maxlength: "255",
+            "aria-required": "true"
+          }
+        }) }}
+
+        {{ govukTextarea({
+          label: {
+            text: "Description (optional)",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Up to 1000 characters."
+          },
+          id: "description",
+          name: "description",
+          value: task.description,
+          rows: 4,
+          errorMessage: { text: fieldErrors.description } if fieldErrors.description,
+          attributes: {
+            maxlength: "1000"
+          }
+        }) }}
+
+        {{ govukSelect({
+          id: "status",
+          name: "status",
+          label: {
+            html: 'Status <span class="app-required-indicator" aria-hidden="true">*</span>',
+            classes: "govuk-label--m"
+          },
+          errorMessage: { text: fieldErrors.status } if fieldErrors.status,
+          attributes: {
+            "aria-required": "true"
+          },
+          items: [
+            {
+              value: "",
+              text: "Select a status",
+              selected: not task.status
+            },
+            {
+              value: "TODO",
+              text: "To do",
+              selected: task.status == "TODO"
+            },
+            {
+              value: "IN_PROGRESS",
+              text: "In progress",
+              selected: task.status == "IN_PROGRESS"
+            },
+            {
+              value: "DONE",
+              text: "Done",
+              selected: task.status == "DONE"
+            }
+          ]
+        }) }}
+
+        {{ govukInput({
+          label: {
+            html: 'Due date and time <span class="app-required-indicator" aria-hidden="true">*</span>',
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Must be in the future. Use the date and time picker." if mode == "create" else "Use the date and time picker."
+          },
+          id: "dueDateTime",
+          name: "dueDateTime",
+          value: task.dueDateTime,
+          type: "datetime-local",
+          errorMessage: { text: fieldErrors.dueDateTime } if fieldErrors.dueDateTime,
+          classes: "govuk-input--width-20",
+          attributes: {
+            "aria-required": "true"
+          }
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save task"
+          }) }}
+          <a class="govuk-link" href="/tasks">Cancel</a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

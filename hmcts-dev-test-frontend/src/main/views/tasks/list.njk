@@ -1,0 +1,196 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% extends "template.njk" %}
+
+{% block pageTitle %}Tasks - HMCTS Task Manager{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <div class="govuk-grid-row govuk-!-margin-bottom-4">
+        <div class="govuk-grid-column-one-half">
+          <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">Your tasks</h1>
+          <p class="govuk-body app-signed-in-line">Signed in as <strong>{{ actorName }}</strong>. <form method="post" action="/sign-out" class="app-inline-sign-out-form"><button type="submit" class="govuk-link app-sign-out-button">Sign out</button></form></p>
+        </div>
+        <div class="govuk-grid-column-one-half app-view-toolbar">
+          <div class="app-view-toggle" role="group" aria-label="Switch view">
+            <span class="app-view-toggle__btn app-view-toggle__btn--active" aria-current="true">List view</span>
+            <a href="/tasks" class="govuk-link app-view-toggle__btn">Kanban view</a>
+          </div>
+          {% if totalTaskCount > 0 %}
+            <a href="/tasks/new" role="button" draggable="false" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">
+              Create new task
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if apiError %}
+        {{ govukNotificationBanner({
+          type: "important",
+          titleText: "Important",
+          html: '<p class="govuk-body">' + apiError + '</p>'
+        }) }}
+      {% elif totalTaskCount == 0 %}
+        <div class="govuk-inset-text">
+          <p class="govuk-body">No tasks found. <a class="govuk-link" href="/tasks/new">Create your first task</a>.</p>
+        </div>
+      {% else %}
+        <div class="govuk-grid-row app-list-layout">
+          <div class="govuk-grid-column-one-quarter-from-desktop">
+            <aside class="app-list-sidebar" aria-label="Filter and sort tasks">
+              <div class="app-list-sidebar__panel">
+                <h2 class="govuk-heading-s app-list-sidebar__title">Filters</h2>
+                <form method="get" action="/tasks" class="app-list-filters">
+                  <input type="hidden" name="view" value="list">
+                  <input type="hidden" name="listFilter" value="1">
+                  {{ govukCheckboxes({
+                    name: "status",
+                    classes: "govuk-checkboxes--small",
+                    fieldset: {
+                      legend: {
+                        text: "Status",
+                        classes: "govuk-fieldset__legend--s govuk-!-font-weight-bold"
+                      }
+                    },
+                    hint: {
+                      text: "Tick statuses to show in the table."
+                    },
+                    items: [
+                      { value: "TODO", text: "To do", checked: statusFilter.TODO, hint: {} },
+                      { value: "IN_PROGRESS", text: "In progress", checked: statusFilter.IN_PROGRESS, hint: {} },
+                      { value: "DONE", text: "Done", checked: statusFilter.DONE, hint: {} }
+                    ]
+                  }) }}
+                  {{ govukSelect({
+                    id: "list-sort",
+                    name: "sort",
+                    classes: "govuk-!-width-full govuk-!-margin-top-4",
+                    label: {
+                      text: "Sort by due date",
+                      classes: "govuk-label--s govuk-!-font-weight-bold"
+                    },
+                    items: [
+                      { value: "due-asc", text: "Soonest first", selected: listSort == "due-asc" },
+                      { value: "due-desc", text: "Latest first", selected: listSort == "due-desc" }
+                    ]
+                  }) }}
+                  <div class="app-list-sidebar__actions govuk-!-margin-top-4">
+                    {{ govukButton({ text: "Apply", type: "submit", classes: "govuk-!-width-full" }) }}
+                    <p class="govuk-body-s govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+                      <a class="govuk-link" href="/tasks?view=list">Clear filters and sorting</a>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </aside>
+          </div>
+          <div class="govuk-grid-column-three-quarters-from-desktop app-list-main">
+        {% if tasks.length == 0 %}
+          <div class="govuk-inset-text">
+            <p class="govuk-body">No tasks match your filters. Try ticking more statuses or <a class="govuk-link" href="/tasks?view=list">clear filters and sorting</a>.</p>
+          </div>
+        {% else %}
+        <div class="app-list-table-wrap">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Title</th>
+              <th scope="col" class="govuk-table__header">Status</th>
+              <th scope="col" class="govuk-table__header">Due</th>
+              <th scope="col" class="govuk-table__header">Created by</th>
+              <th scope="col" class="govuk-table__header">Last updated by</th>
+              <th scope="col" class="govuk-table__header">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for task in tasks %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <strong>{{ task.title }}</strong>
+                  {% if task.description %}
+                    <br><span class="govuk-body-s govuk-!-color-secondary">{{ task.description }}</span>
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell">
+                  {% if task.status == 'TODO' %}
+                    {{ govukTag({ text: "To do", classes: "govuk-tag--grey" }) }}
+                  {% elif task.status == 'IN_PROGRESS' %}
+                    {{ govukTag({ text: "In progress", classes: "govuk-tag--blue" }) }}
+                  {% elif task.status == 'DONE' %}
+                    {{ govukTag({ text: "Done", classes: "govuk-tag--green" }) }}
+                  {% else %}
+                    {{ govukTag({ text: task.status }) }}
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell govuk-body-s">
+                  {{ task.dueDateTime | formatDueDateTime }}
+                </td>
+                <td class="govuk-table__cell govuk-body-s">{{ task.createdBy }}</td>
+                <td class="govuk-table__cell govuk-body-s">{{ task.updatedBy }}</td>
+                <td class="govuk-table__cell">
+                  <div class="app-table-actions govuk-button-group govuk-!-margin-bottom-0">
+                    <a
+                      href="/tasks/{{ task.id }}/edit"
+                      role="button"
+                      draggable="false"
+                      class="govuk-button govuk-button--small"
+                      data-module="govuk-button"
+                    >Edit</a>
+                    <button
+                      type="button"
+                      class="govuk-button govuk-button--secondary govuk-button--small"
+                      data-module="govuk-button"
+                      onclick="
+                        var d = document.getElementById('delete-task-dialog');
+                        document.getElementById('delete-task-dialog-title').textContent = 'Are you sure you want to delete \u201c{{ task.title | escape }}\u201d?';
+                        document.getElementById('delete-task-form').action = '/tasks/{{ task.id }}/delete';
+                        d.showModal();
+                      "
+                    >Delete</button>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+        {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  {# Delete confirmation dialog - action is set dynamically by each Delete button #}
+  <dialog
+    id="delete-task-dialog"
+    class="delete-task-dialog"
+    aria-labelledby="delete-task-dialog-title"
+    aria-modal="true"
+  >
+    <div class="delete-task-dialog__panel">
+      <h2 class="govuk-heading-m" id="delete-task-dialog-title">
+        Are you sure you want to delete this task?
+      </h2>
+      <p class="govuk-body">This action cannot be undone.</p>
+      <form id="delete-task-form" method="post" action="">
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button app-button--modal-delete-confirm" data-module="govuk-button">
+            Yes, delete task
+          </button>
+          <button type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" onclick="document.getElementById('delete-task-dialog').close()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+{% endblock %}

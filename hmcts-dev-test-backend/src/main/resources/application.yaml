@@ -1,0 +1,40 @@
+server:
+  port: 4000
+  shutdown: 'graceful'
+
+management:
+  endpoint:
+    health:
+      show-details: 'always'
+      group:
+        readiness:
+          include: 'db'
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: info,health
+
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.dev.controllers
+  writer-with-order-by-keys: true
+
+spring:
+  config:
+    import: 'optional:configtree:/mnt/secrets/test/'
+  application:
+    name: HMCTS Task Manager
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+  datasource:
+    url: jdbc:sqlite:./data/tasks.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
