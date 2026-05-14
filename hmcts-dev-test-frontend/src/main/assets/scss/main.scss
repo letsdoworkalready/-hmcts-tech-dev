@@ -3,8 +3,15 @@ $govuk-page-width: 1536px;
 
 @import 'govuk-frontend';
 
+/* Welcome: centred column so the block sits under the centred service title on wide viewports */
+.app-welcome-panel {
+  box-sizing: border-box;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-/* Service header: solid black bar */
+/* Service header: solid black bar (GOV.UK puts the brand blue on .govuk-header__container, not only the outer block) */
 .govuk-header {
   border-bottom-color: $govuk-text-colour;
 }

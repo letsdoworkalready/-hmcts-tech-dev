@@ -9,7 +9,8 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
+      <div class="app-welcome-panel">
 
       {% if errors.length %}
         {{ govukErrorSummary({
@@ -59,6 +60,7 @@
 
       </form>
 
+      </div>
     </div>
   </div>
 {% endblock %}
