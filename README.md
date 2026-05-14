@@ -21,7 +21,7 @@ The GOV.UK-styled frontend for the HMCTS caseworker task management system.
   ```bash
   npm install -g yarn
   ```
-- The [backend service](../hmcts-dev-test-backend/README.md) running on `http://localhost:4000`
+- The [backend service](https://github.com/letsdoworkalready/-hmcts-tech-dev/blob/main/hmcts-dev-test-backend/README.md) running on `http://localhost:4000`
 
 ### Setup and start
 
@@ -84,9 +84,9 @@ The caseworker's name is stored in an HTTP-only server-side session cookie and s
 
 **Kanban** is the default. **List** adds filters and due-date ordering for the same data.
 
-![Kanban view - default board after sign-in](assets/kanbanView.png)
+![Kanban view - default board after sign-in](hmcts-dev-test-frontend/assets/kanbanView.png)
 
-![List view - table with filters and sort](assets/listView.png)
+![List view - table with filters and sort](hmcts-dev-test-frontend/assets/listView.png)
 
 ## Running Tests
 
