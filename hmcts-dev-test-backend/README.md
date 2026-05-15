@@ -18,6 +18,8 @@ A Spring Boot REST API for the HMCTS caseworker task management system.
 - Java 21+
 - Gradle (wrapper included)
 
+This repository also includes a VS Code/Codespaces devcontainer configuration that pins Java 21 and the Gradle wrapper environment. Open the repo in the devcontainer so your environment matches the project requirements.
+
 ### Start the API
 
 ```bash

@@ -1,0 +1,19 @@
+{
+  "name": "HMCTS Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "features": {
+    "ghcr.io/devcontainers/features/gradle:1": {
+      "version": "8.14.4"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
+  "postCreateCommand": "cd hmcts-dev-test-backend && chmod +x gradlew || true && ./gradlew --version",
+  "remoteUser": "vscode"
+}
