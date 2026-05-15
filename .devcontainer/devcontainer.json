@@ -2,8 +2,8 @@
   "name": "HMCTS Dev Container",
   "image": "mcr.microsoft.com/devcontainers/java:21",
   "features": {
-    "ghcr.io/devcontainers/features/gradle:1": {
-      "version": "8.14.4"
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
     }
   },
   "customizations": {
@@ -14,6 +14,6 @@
       ]
     }
   },
-  "postCreateCommand": "cd hmcts-dev-test-backend && chmod +x gradlew || true && ./gradlew --version",
+  "postCreateCommand": "cd hmcts-dev-test-backend && chmod +x gradlew || true && ./gradlew --version && cd ../hmcts-dev-test-frontend && npm install -g yarn@3.8.2",
   "remoteUser": "vscode"
 }

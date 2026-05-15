@@ -2,7 +2,24 @@
 
 The GOV.UK-styled frontend for the HMCTS caseworker task management system.
 
+## Development Environment
+
+This repository includes a VS Code devcontainer configuration for consistent development environments. When opening this repo in GitHub Codespaces, the devcontainer will automatically set up:
+
+- Java 21 (for the backend)
+- Node.js 18 (for the frontend)
+- Yarn package manager
+- All required dependencies
+
+To use the devcontainer in Codespaces:
+1. Open the repo in Codespaces
+2. VS Code will prompt to reopen in the devcontainer
+3. Click "Reopen in Container" to proceed
+
+This ensures both frontend and backend can run without manual environment setup.
+
 ## Tech Stack
+
 
 - Node.js 18+
 - TypeScript
