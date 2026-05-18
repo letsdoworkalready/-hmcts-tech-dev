@@ -28,6 +28,8 @@
         </div>
       </div>
 
+      {% include "tasks/_success-banner.njk" %}
+
       {% if apiError %}
         {{ govukNotificationBanner({
           type: "important",

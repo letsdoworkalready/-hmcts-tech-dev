@@ -11,7 +11,7 @@ $govuk-page-width: 1536px;
   margin-right: auto;
 }
 
-/* Service header: solid black bar) */
+/* Service header: solid black bar (GOV.UK puts the brand blue on .govuk-header__container, not only the outer block) */
 .govuk-header {
   border-bottom-color: $govuk-text-colour;
 }
@@ -92,18 +92,42 @@ button.govuk-link.app-sign-out-button {
   flex-wrap: wrap;
 }
 
-/* List view: sidebar filters + main table */
+/* List view: sidebar filters (left) + table (right) */
 .app-list-layout {
-  align-items: flex-start;
+  @include govuk-media-query($from: tablet) {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: govuk-spacing(4);
+
+    > [class*='govuk-grid-column'] {
+      float: none;
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    > .govuk-grid-column-one-quarter-from-desktop {
+      flex: 0 0 20rem;
+      max-width: 22rem;
+    }
+
+    > .app-list-main {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
 }
 
 .app-list-sidebar {
   margin-bottom: govuk-spacing(4);
 
+  @include govuk-media-query($from: tablet) {
+    margin-bottom: 0;
+  }
+
   @include govuk-media-query($from: desktop) {
     position: sticky;
     top: govuk-spacing(2);
-    margin-bottom: 0;
   }
 }
 
@@ -263,7 +287,6 @@ button.govuk-link.app-sign-out-button {
 
 /*
  * Red destructive confirm: ONLY inside #delete-task-dialog.
- * Table row Delete stays govuk-button--secondary (grey); do not reuse this class there.
  */
 .delete-task-dialog .govuk-button.app-button--modal-delete-confirm {
   $destructive: $govuk-error-colour;

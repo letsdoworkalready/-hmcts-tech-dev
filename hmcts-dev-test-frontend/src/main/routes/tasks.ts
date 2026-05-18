@@ -2,6 +2,12 @@ import { Application, Request, Response } from 'express';
 
 import axios from 'axios';
 import { requireActor } from '../middleware/requireActor';
+import {
+  consumeErrorFlash,
+  consumeSuccessFlash,
+  setErrorFlash,
+  setSuccessFlash,
+} from '../utils/flashSuccess';
 
 const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:4000';
 
@@ -212,10 +218,14 @@ function applyListViewTransforms(tasks: TaskResponse[], query: Request['query'])
 export default function (app: Application): void {
   app.get('/tasks', requireActor, async (req: Request, res: Response) => {
     const view = req.query.view === 'list' ? 'list' : 'kanban';
+    const successMessage = consumeSuccessFlash(req);
+    const flashError = consumeErrorFlash(req);
     try {
       const { data: tasks } = await axios.get<TaskResponse[]>(`${apiBaseUrl}/tasks`);
       if (view === 'kanban') {
         res.render('tasks/kanban', {
+          successMessage,
+          apiError: flashError,
           tasks,
           columns: [
             { id: 'TODO', label: 'To do', tasks: tasks.filter(t => t.status === 'TODO') },
@@ -229,6 +239,8 @@ export default function (app: Application): void {
         const included = parseListIncludedStatuses(req.query);
         const displayTasks = applyListViewTransforms(tasks, req.query);
         res.render('tasks/list', {
+          successMessage,
+          apiError: flashError,
           tasks: displayTasks,
           totalTaskCount,
           currentView: 'list',
@@ -242,9 +254,13 @@ export default function (app: Application): void {
       }
     } catch (err) {
       logApiError('GET /tasks', err);
-      const errorPayload = { tasks: [], apiError: 'Could not load tasks. Please try again.' };
+      const errorPayload = {
+        tasks: [],
+        apiError: flashError ?? 'Could not load tasks. Please try again.',
+      };
       res.render(view === 'kanban' ? 'tasks/kanban' : 'tasks/list', {
         ...errorPayload,
+        successMessage,
         columns: [
           { id: 'TODO', label: 'To do', tasks: [] },
           { id: 'IN_PROGRESS', label: 'In progress', tasks: [] },
@@ -280,6 +296,7 @@ export default function (app: Application): void {
         { title, description, status, dueDateTime: isoDue },
         { headers: { ...jsonHeaders, ...actorHeader(req) } }
       );
+      setSuccessFlash(req, 'Task created');
       res.redirect('/tasks');
     } catch (err: unknown) {
       logApiError('POST /tasks', err);
@@ -321,6 +338,7 @@ export default function (app: Application): void {
         { title, description, status, dueDateTime: isoDue },
         { headers: { ...jsonHeaders, ...actorHeader(req) } }
       );
+      setSuccessFlash(req, 'Task updated');
       res.redirect('/tasks');
     } catch (err: unknown) {
       logApiError(`PUT /tasks/${req.params.id}`, err);
@@ -337,8 +355,10 @@ export default function (app: Application): void {
   app.post('/tasks/:id/delete', requireActor, async (req: Request, res: Response) => {
     try {
       await axios.delete(`${apiBaseUrl}/tasks/${req.params.id}`, { headers: actorHeader(req) });
+      setSuccessFlash(req, 'Task deleted');
     } catch (err) {
       logApiError(`DELETE /tasks/${req.params.id}`, err);
+      setErrorFlash(req, 'Could not delete task. Please try again.');
     }
     res.redirect('/tasks');
   });
